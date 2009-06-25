@@ -1,0 +1,36 @@
+Flopsy
+======
+
+A very simple way to interact with python AMQPlib. For my case I'm using
+RabbitMQ as my implementation but it should work with others.
+
+settings.py
+-----------
+
+AMQP_SERVER = '24.143.38.241'
+AMQP_PORT = 5672
+AMQP_USER = 'guest'
+AMQP_PASSWORD = 'guest'
+AMQP_VHOST = '/'
+
+Consumer
+--------
+
+>>> from flopsy import Connection, Consumer
+>>> consumer = Consumer(connection=Connection())
+>>> consumer.declare(queue='po_box', exchange='sorting_room', routing_key='jason', auto_delete=False)
+
+>>> def message_callback(message):
+...     print 'Recieved: ' + message.body
+...     consumer.channel.basic_ack(message.delivery_tag)
+>>>
+>>> consumer.register(message_callback)
+>>> consumer.wait()
+
+Publisher
+---------
+
+>>> from flopsy import Connection, Publisher
+>>> publisher = Publisher(connection=Connection(), exchange='sorting_room', routing_key='jason')
+>>> publisher.publish('Test message!')
+>>> publisher.close()
