@@ -16,21 +16,19 @@ AMQP_VHOST = '/'
 Consumer
 --------
 
->>> from flopsy import Connection, Consumer
->>> consumer = Consumer(connection=Connection())
->>> consumer.declare(queue='po_box', exchange='sorting_room', routing_key='jason', auto_delete=False)
-
+>>> import flopsy
+>>> consumer = flopsy.Consumer()
 >>> def message_callback(message):
 ...     print 'Recieved: ' + message.body
 ...     consumer.channel.basic_ack(message.delivery_tag)
->>>
->>> consumer.register(message_callback)
+...
+>>> consumer.register('message_to_print', message_callback)
 >>> consumer.wait()
+
 
 Publisher
 ---------
 
->>> from flopsy import Connection, Publisher
->>> publisher = Publisher(connection=Connection(), exchange='sorting_room', routing_key='jason')
->>> publisher.publish('Test message!')
->>> publisher.close()
+>>> import flopsy
+>>> publisher = flopsy.Publisher()
+>>> publisher.publish('messages_to_print', 'Test message!')
